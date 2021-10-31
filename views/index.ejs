@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+    <div class="input">
+      <h3>Input Boxes</h3>
+      <div class="input-container">
+        <label>Input 1</label>
+        <input type="number" value="7" />
+      </div>
+      <div class="input-container">
+        <label>Input 2</label>
+        <input type="number" value="4" />
+      </div>
+      <button>Update</button>
+    </div>
+    <div class="output">
+      <h3>Output Chart</h3>
+      <canvas></canvas>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/javascripts/helper.js"></script>
+    <script src="/javascripts/myChart.js"></script>
+    <script>
+      const barChart = createChart(".output canvas");
+      const updateBtn = document.querySelector(".input button");
+
+      updateBtn.addEventListener("click", async () => {
+        const inputBoxes = document.querySelectorAll(".input .input-container");
+        let chartNewData = [];
+        inputBoxes.forEach((inputBox) => {
+          const label = inputBox.querySelector("label");
+          const input = inputBox.querySelector("input");
+          chartNewData.push({
+            key: label.innerText,
+            value: input.value,
+          });
+        });
+
+        // Update server
+        const res = await fetch("/data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(chartNewData),
+        });
+
+        if (res.ok) {
+          const resJson = await res.json();
+          removeAllData(barChart);
+
+          resJson.data.forEach((d) => {
+            addData(barChart, d.key, d.value);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
