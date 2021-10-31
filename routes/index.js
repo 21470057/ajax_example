@@ -34,10 +34,11 @@ router.post("/data/", (req, res) => {
       const existingInput = chartCollection.findOne({ key: data.key });
 
       if (existingInput) {
-        console.log(existingInput);
+        // Update
         existingInput.value = existingInput.value + parseInt(data.value);
         chartCollection.update(existingInput);
       } else {
+        // Create
         chartCollection.insert({
           key: data.key,
           value: parseInt(data.value),
@@ -48,15 +49,7 @@ router.post("/data/", (req, res) => {
     }
   });
 
-  // console.log(newData);
   res.json({ result: true, data: chartCollection.find() });
-});
-
-// Get Chart Data
-router.get("/data/", (req, res) => {
-  var result = db.getCollection("chart").find();
-
-  res.json({ data: result });
 });
 
 module.exports = router;

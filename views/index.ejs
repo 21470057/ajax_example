@@ -28,9 +28,13 @@
       const barChart = createChart(".output canvas");
       const updateBtn = document.querySelector(".input button");
 
+      // When update button clicked
       updateBtn.addEventListener("click", async () => {
+        // Get all the input boxes
         const inputBoxes = document.querySelectorAll(".input .input-container");
         let chartNewData = [];
+
+        // Loop through the input boxes and create new data array
         inputBoxes.forEach((inputBox) => {
           const label = inputBox.querySelector("label");
           const input = inputBox.querySelector("input");
@@ -49,10 +53,14 @@
           body: JSON.stringify(chartNewData),
         });
 
+        // server wil response with updated values
         if (res.ok) {
           const resJson = await res.json();
+
+          // Remove all data from chart
           removeAllData(barChart);
 
+          // Draw the chart again
           resJson.data.forEach((d) => {
             addData(barChart, d.key, d.value);
           });
