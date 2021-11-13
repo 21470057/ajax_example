@@ -31,19 +31,19 @@ router.post("/data/", (req, res) => {
 
   newData.forEach((data) => {
     try {
-      const existingInput = chartCollection.findOne({ key: data.key });
+      /*const existingInput = chartCollection.findOne({ key: data.key });
 
       if (existingInput) {
         // Update
         existingInput.value = existingInput.value + parseInt(data.value);
         chartCollection.update(existingInput);
-      } else {
-        // Create
-        chartCollection.insert({
-          key: data.key,
-          value: parseInt(data.value),
-        });
-      }
+      } else {*/
+      // Create
+      chartCollection.insert({
+        key: data.key,
+        value: parseInt(data.value),
+      });
+      //}
     } catch (err) {
       console.log(err);
     }

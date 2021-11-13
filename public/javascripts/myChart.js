@@ -12,7 +12,7 @@ const data = {
   ],
 };
 
-const config = {
+const config1 = {
   type: "bar",
   data,
   options: {
@@ -21,7 +21,7 @@ const config = {
       x: {
         title: {
           display: true,
-          text: "X sacale text",
+          text: "No. of corresponding Interviewee",
           font: {
             size: 18,
           },
@@ -32,9 +32,9 @@ const config = {
     plugins: {
       title: {
         display: true,
-        text: "Chart Title here",
+        text: "Age Group of Interviewee",
         font: {
-          size: 24,
+          size: 16,
         },
         padding: 20,
       },
@@ -45,13 +45,89 @@ const config = {
   },
 };
 
-function createChart(selector) {
-  return new Chart(document.querySelector(selector), config);
+const config2 = {
+  type: "line",
+  data,
+  options: {
+    indexAxis: "y",
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "No. of corresponding Interviewee",
+          font: {
+            size: 18,
+          },
+          padding: 20,
+        },
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: "Expected time to close Border Control",
+        font: {
+          size: 16,
+        },
+        padding: 20,
+      },
+      legend: {
+        display: false,
+      },
+    },
+  },
+};
+
+const config3 = {
+  type: "pie",
+  data,
+  options: {
+    indexAxis: "y",
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: "No. of corresponding Interviewee",
+          font: {
+            size: 18,
+          },
+          padding: 20,
+        },
+      },
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: "Most wanted travel place",
+        font: {
+          size: 16,
+        },
+        padding: 20,
+      },
+      legend: {
+        display: false,
+      },
+    },
+  },
+};
+
+
+function createChart1(selector) {
+  return new Chart(document.querySelector(selector), config1);
+}
+
+function createChart2(selector) {
+  return new Chart(document.querySelector(selector), config2);
+}
+
+function createChart3(selector) {
+  return new Chart(document.querySelector(selector), config3);
 }
 
 function addData(chart, label, data) {
   chart.data.labels.push(label);
   chart.data.datasets.forEach((dataset) => {
+    current_set = dataset.data;
     dataset.data.push(data);
     dataset.backgroundColor.push(getRandomColor());
     dataset.borderColor.push(getRandomColor());

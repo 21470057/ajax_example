@@ -1,71 +1,221 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-  </head>
-  <body>
+
+<head>
+  <title>Instant Survey on HK Boarder Quarantine Expectation</title>
+  <link rel="stylesheet" href="/stylesheets/style.css" />
+</head>
+
+<body>
+  <div class="columns">
     <div class="input">
-      <h3>Input Boxes</h3>
-      <div class="input-container">
-        <label>Input 1</label>
-        <input type="number" value="7" />
+
+      <h3>Instant Survey on HK Boarder Quarantine Expectation</h3>
+      </br>
+      <div class="column">
+        <label class="label">Your Age Range</label>
+        <div class="control">
+          <div class="select" name="sample_age">
+            <select id="q_age">
+              <option value="0">0-18 Y.O.</option>
+              <option value="1">18-30 Y.O.</option>
+              <option value="2">30-45 Y.O.</option>
+              <option value="3">45-65 Y.O.</option>
+              <option value="4">65 Y.O. above</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <div class="input-container">
-        <label>Input 2</label>
-        <input type="number" value="4" />
+      </br>
+      <div class="column">
+        <label class="label">When do you expect Boarder to be re-opend (not Quarantine measure)?</label>
+        <div class="control">
+          <div class="select" name="sample_when">
+            <select id="q_when">
+              <option value="0">1st half of 2022</option>
+              <option value="1">2nd half of 2022</option>
+              <option value="2">1st half of 2023</option>
+              <option value="3">2nd half of 2023</option>
+              <option value="4">1st half of 2024</option>
+              <option value="5">2nd half of 2024</option>
+              <option value="6">2025 or later</option>
+            </select>
+          </div>
+        </div>
       </div>
-      <button>Update</button>
+      </br>
+      <div class="column">
+        <label class="label">Which place do you want to travel most?</label>
+        <div class="control">
+          <div class="select" name="sample_where">
+            <select id="q_where">
+              <option value="0">Taiwan</option>
+              <option value="1">Japan</option>
+              <option value="2">United Kindgom</option>
+              <option value="3">United States</option>
+              <option value="4">Mainland China</option>
+              <option value="5">Europe</option>
+              <option value="6">Others</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button>Submit Survey</button>
+
     </div>
-    <div class="output">
-      <h3>Output Chart</h3>
-      <canvas></canvas>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/javascripts/helper.js"></script>
-    <script src="/javascripts/myChart.js"></script>
-    <script>
-      const barChart = createChart(".output canvas");
-      const updateBtn = document.querySelector(".input button");
+  </div>
 
-      // When update button clicked
-      updateBtn.addEventListener("click", async () => {
-        // Get all the input boxes
-        const inputBoxes = document.querySelectorAll(".input .input-container");
-        let chartNewData = [];
+  <div class="output">
+    <h3>Instant Result in Charts</h3>
+    <canvas id="bar_chart"></canvas>
+    <canvas id="line_chart"></canvas>
+    <canvas id="pie_chart"></canvas>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="/javascripts/helper.js"></script>
+  <script src="/javascripts/myChart.js"></script>
+  <script>
 
-        // Loop through the input boxes and create new data array
-        inputBoxes.forEach((inputBox) => {
-          const label = inputBox.querySelector("label");
-          const input = inputBox.querySelector("input");
-          chartNewData.push({
-            key: label.innerText,
-            value: input.value,
-          });
-        });
 
-        // Update server
-        const res = await fetch("/data", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(chartNewData),
-        });
 
-        // server wil response with updated values
-        if (res.ok) {
-          const resJson = await res.json();
+    const barChart = createChart1(".output #bar_chart");
+    const lineChart = createChart2(".output #line_chart");
+    const pieChart = createChart3(".output #pie_chart");
+    const updateBtn = document.querySelector(".input button");
 
-          // Remove all data from chart
-          removeAllData(barChart);
+    //current_data.forEach((x) => console.log(x));
+    let current_data;
 
-          // Draw the chart again
-          resJson.data.forEach((d) => {
-            addData(barChart, d.key, d.value);
-          });
-        }
+    // When update button clicked
+    updateBtn.addEventListener("click", async () => {
+      let chartNewData = [];
+      var q1_ele = document.getElementById("q_age"); var q1_val = q1_ele.options[q1_ele.selectedIndex].value;
+      chartNewData.push({
+        key: "a1",
+        value: q1_val,
       });
-    </script>
-  </body>
+      var q2_ele = document.getElementById("q_when"); var q2_val = q2_ele.options[q2_ele.selectedIndex].value;
+      chartNewData.push({
+        key: "a2",
+        value: q2_val,
+      });
+      var q3_ele = document.getElementById("q_where"); var q3_val = q3_ele.options[q3_ele.selectedIndex].value;
+      chartNewData.push({
+        key: "a3",
+        value: q3_val,
+      });
+      // Get all the input boxes
+      const inputBoxes = document.querySelectorAll(".input .input-container");
+      //update
+      const res = await fetch("/data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(chartNewData),
+      });
+
+      // server wil response with updated values
+      if (res.ok) {
+        const resJson = await res.json();
+
+        // Remove all data from chart
+        removeAllData(barChart);
+
+        // Draw the chart again
+        current_data = resJson.data;
+
+        var processed_q1_data2 = [];
+        processed_q1_data2.push({ key: "0-18 Y.O.", value: 0 });
+        processed_q1_data2.push({ key: "18-30 Y.O.", value: 0 });
+        processed_q1_data2.push({ key: "30-45 Y.O.", value: 0 });
+        processed_q1_data2.push({ key: "45-65 Y.O.", value: 0 });
+        processed_q1_data2.push({ key: "65 Y.O. above", value: 0 });
+
+        var processed_q2_data2 = [];
+        processed_q2_data2.push({ key: "1st half of 2022", value: 0 });
+        processed_q2_data2.push({ key: "2nd half of 2022", value: 0 });
+        processed_q2_data2.push({ key: "1st half of 2023", value: 0 });
+        processed_q2_data2.push({ key: "2nd half of 2023", value: 0 });
+        processed_q2_data2.push({ key: "1st half of 2024", value: 0 });
+        processed_q2_data2.push({ key: "2nd half of 2024", value: 0 });
+        processed_q2_data2.push({ key: "2025 or later", value: 0 });
+
+        var processed_q3_data2 = [];
+        processed_q3_data2.push({ key: "Taiwan", value: 0 });
+        processed_q3_data2.push({ key: "Japan", value: 0 });
+        processed_q3_data2.push({ key: "United Kindgom", value: 0 });
+        processed_q3_data2.push({ key: "United States", value: 0 });
+        processed_q3_data2.push({ key: "Mainland China", value: 0 });
+        processed_q3_data2.push({ key: "Europe", value: 0 });
+        processed_q3_data2.push({ key: "Others", value: 0 });
+
+
+        resJson.data.forEach((d) => {
+          if (d["key"] == "a1") {
+            if (d["value"] == 0) {
+              processed_q1_data2[0].value++;
+            } else if (d["value"] == 1) {
+              processed_q1_data2[1].value++;
+            } else if (d["value"] == 2) {
+              processed_q1_data2[2].value++;
+            } else if (d["value"] == 3) {
+              processed_q1_data2[3].value++;
+            } else if (d["value"] == 4) {
+              processed_q1_data2[4].value++;
+            }
+          } else if (d["key"] == "a2") {
+            if (d["value"] == 0) {
+              processed_q2_data2[0].value++;
+            } else if (d["value"] == 1) {
+              processed_q2_data2[1].value++;
+            } else if (d["value"] == 2) {
+              processed_q2_data2[2].value++;
+            } else if (d["value"] == 3) {
+              processed_q2_data2[3].value++;
+            } else if (d["value"] == 4) {
+              processed_q2_data2[4].value++;
+            } else if (d["value"] == 5) {
+              processed_q2_data2[5].value++;
+            } else if (d["value"] == 6) {
+              processed_q2_data2[6].value++;
+            }
+          } else if (d["key"] == "a3") {
+            if (d["value"] == 0) {
+              processed_q3_data2[0].value++;
+            } else if (d["value"] == 1) {
+              processed_q3_data2[1].value++;
+            } else if (d["value"] == 2) {
+              processed_q3_data2[2].value++;
+            } else if (d["value"] == 3) {
+              processed_q3_data2[3].value++;
+            } else if (d["value"] == 4) {
+              processed_q3_data2[4].value++;
+            } else if (d["value"] == 5) {
+              processed_q3_data2[5].value++;
+            } else if (d["value"] == 6) {
+              processed_q3_data2[6].value++;
+            }
+          }
+        });
+
+        processed_q1_data2.forEach((processed_q1_data2) => {
+          addData(barChart, processed_q1_data2.key, processed_q1_data2.value);
+        });
+
+        processed_q2_data2.forEach((processed_q2_data2) => {
+          current_data = processed_q2_data2;
+          addData(lineChart, processed_q2_data2.key, processed_q2_data2.value);
+        });
+
+        processed_q3_data2.forEach((processed_q3_data2) => {
+          addData(pieChart, processed_q3_data2.key, processed_q3_data2.value);
+        });
+
+      }
+    });
+  </script>
+</body>
+
 </html>
